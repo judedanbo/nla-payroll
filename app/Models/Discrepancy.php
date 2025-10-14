@@ -54,9 +54,21 @@ class Discrepancy extends Model
         return $this->hasMany(DiscrepancyNote::class);
     }
 
+    // Alias for controller consistency
+    public function discrepancyNotes(): HasMany
+    {
+        return $this->notes();
+    }
+
     public function resolution(): HasOne
     {
         return $this->hasOne(DiscrepancyResolution::class);
+    }
+
+    // Alias for controller consistency
+    public function discrepancyResolution(): HasOne
+    {
+        return $this->resolution();
     }
 
     // Business Methods
@@ -111,7 +123,7 @@ class Discrepancy extends Model
         if ($reason) {
             $this->notes()->create([
                 'created_by' => auth()->id(),
-                'note_content' => 'Dismissed: '.$reason,
+                'note_content' => 'Dismissed: ' . $reason,
                 'is_internal' => true,
             ]);
         }
@@ -158,7 +170,7 @@ class Discrepancy extends Model
             'missing_data' => 'Missing Data',
             'unregistered_personnel' => 'Unregistered Personnel',
             'other' => 'Other',
-            default => $this->discrepancy_type,
+            default => DiscrepancyType::Other->label(),
         };
     }
 

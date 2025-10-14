@@ -56,5 +56,25 @@ Route::middleware(['auth', 'verified'])->prefix('assignments')->name('assignment
     Route::post('{assignment}/reassign', [\App\Http\Controllers\TeamAssignmentController::class, 'reassign'])->name('reassign');
 });
 
+// Discrepancy Management Routes
+Route::middleware(['auth', 'verified'])->prefix('discrepancies')->name('discrepancies.')->group(function () {
+    // List and CRUD
+    Route::get('/', [\App\Http\Controllers\DiscrepancyController::class, 'index'])->name('index');
+    Route::get('create', [\App\Http\Controllers\DiscrepancyController::class, 'create'])->name('create');
+    Route::post('/', [\App\Http\Controllers\DiscrepancyController::class, 'store'])->name('store');
+    Route::get('{discrepancy}', [\App\Http\Controllers\DiscrepancyController::class, 'show'])->name('show');
+    Route::put('{discrepancy}', [\App\Http\Controllers\DiscrepancyController::class, 'update'])->name('update');
+    Route::delete('{discrepancy}', [\App\Http\Controllers\DiscrepancyController::class, 'destroy'])->name('destroy');
+
+    // Workflow actions
+    Route::post('{discrepancy}/under-review', [\App\Http\Controllers\DiscrepancyController::class, 'markUnderReview'])->name('underReview');
+    Route::post('{discrepancy}/resolve', [\App\Http\Controllers\DiscrepancyController::class, 'resolve'])->name('resolve');
+    Route::post('{discrepancy}/dismiss', [\App\Http\Controllers\DiscrepancyController::class, 'dismiss'])->name('dismiss');
+    Route::post('{discrepancy}/notes', [\App\Http\Controllers\DiscrepancyController::class, 'addNote'])->name('addNote');
+
+    // Special pages
+    Route::get('ghost-employees/list', [\App\Http\Controllers\DiscrepancyController::class, 'ghostEmployees'])->name('ghostEmployees');
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
