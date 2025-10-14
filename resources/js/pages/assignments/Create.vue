@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import InputError from '@/components/InputError.vue'
 import { ArrowLeft, UserPlus } from 'lucide-vue-next'
-import { route } from '@/wayfinder'
 
 interface User {
   id: number
@@ -50,7 +49,7 @@ const form = useForm({
 })
 
 function submit() {
-  form.post(route('assignments.store'), {
+  form.post('/assignments', {
     preserveScroll: true,
   })
 }
@@ -64,7 +63,7 @@ function submit() {
           variant="ghost"
           size="icon"
           as="a"
-          :href="route('assignments.index')"
+          href="/assignments"
         >
           <ArrowLeft class="size-4" />
         </Button>
@@ -209,7 +208,7 @@ function submit() {
                 type="button"
                 variant="outline"
                 as="a"
-                :href="route('assignments.index')"
+                href="/assignments"
                 :disabled="form.processing"
               >
                 Cancel

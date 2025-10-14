@@ -12,7 +12,6 @@ import PhotoCapture from '@/components/headcount/PhotoCapture.vue'
 import GPSCapture from '@/components/headcount/GPSCapture.vue'
 import VerificationStatusBadge from '@/components/headcount/VerificationStatusBadge.vue'
 import { ArrowLeft, Search, UserCheck, Users } from 'lucide-vue-next'
-import { route } from '@/wayfinder'
 
 interface Station {
   id: number
@@ -98,7 +97,7 @@ const canSubmit = computed(() => {
 watch(selectedStationId, (newStationId) => {
   if (newStationId) {
     router.get(
-      route('headcount.verify', { session: props.session.id }),
+      `/headcount/${props.session.id}/verify`,
       { station_id: newStationId },
       { preserveState: true, preserveScroll: true }
     )
@@ -149,7 +148,7 @@ function handleSubmit() {
     formData.append('remarks', remarks.value)
   }
 
-  router.post(route('headcount.verify.capture'), formData, {
+  router.post('/headcount/verify', formData, {
     preserveScroll: true,
     onSuccess: () => {
       // Reset form for next verification
@@ -177,7 +176,7 @@ function handleSubmit() {
             variant="ghost"
             size="icon"
             as="a"
-            :href="route('headcount.show', session.id)"
+            :href="`/headcount/${session.id}`"
           >
             <ArrowLeft class="size-4" />
           </Button>
@@ -318,19 +317,17 @@ function handleSubmit() {
               <!-- Photo Capture -->
               <div v-if="selectedStaff" class="space-y-2">
                 <Label>Verification Photo *</Label>
-                <PhotoCapture @capture="handlePhotoCapture" />
+                <PhotoCapture @captured="handlePhotoCapture" />
               </div>
 
               <!-- GPS Capture -->
               <div v-if="selectedStaff && selectedStation" class="space-y-2">
                 <Label>GPS Location</Label>
                 <GPSCapture
-                  :station-location="{
-                    latitude: selectedStation.latitude ?? 0,
-                    longitude: selectedStation.longitude ?? 0,
-                  }"
-                  :radius="selectedStation.gps_boundary ?? 100"
-                  @capture="handleGPSCapture"
+                  :station-latitude="selectedStation.latitude"
+                  :station-longitude="selectedStation.longitude"
+                  :max-distance-km="(selectedStation.gps_boundary ?? 100) / 1000"
+                  @captured="handleGPSCapture"
                 />
               </div>
 
