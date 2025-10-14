@@ -2,9 +2,33 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-# Project: NLA Payroll
+# Project: NLA Payroll (Forensic Audit Headcount Application)
 
-This is a Laravel 12 + Inertia.js + Vue 3 application using the Laravel Starter Kit architecture with Fortify for authentication.
+**Full Project Name:** National Lottery Authority Ghana - Forensic Audit Headcount Application
+
+This is a Laravel 12 + Inertia.js + Vue 3 web application designed to facilitate forensic audit headcount processes across multiple NLA office locations. It uses the Laravel Starter Kit architecture with Fortify for authentication and multi-factor authentication support.
+
+## Project Status
+
+**Current Phase:** Early Development (7 of 245 tasks complete - 2.9%)
+
+**Implemented Features:**
+- ✅ Authentication system with 2FA (Laravel Fortify)
+- ✅ User settings (profile, password, 2FA, appearance/theme)
+- ✅ Basic routing structure (web, auth, settings)
+- ✅ Frontend architecture (Vue 3 + TypeScript + Inertia.js + Tailwind CSS 4)
+- ✅ Development tooling (Pest v4, Laravel Pint, Telescope, Wayfinder)
+- ✅ Docker Compose setup for local MySQL database
+
+**Planned Features** (see `technical_blueprint.md` for details):
+- Domain models: Staff, Department, Unit, JobTitle, Station, BankDetail, MonthlyPayment, etc.
+- Payroll management features
+- Audit verification workflows
+- Excel import/export
+- Role-based permissions
+- Discrepancy tracking and reporting
+
+**Note:** This file documents the current implementation and architecture. For the complete planned feature set, see `technical_blueprint.md`. For task tracking, see `TODOS.md`.
 
 ## Development Commands
 
@@ -20,27 +44,27 @@ composer run dev:ssr  # Same as above but with SSR support
 ```
 
 The `composer run dev` command starts 4 processes:
-- Laravel dev server (`php artisan serve`)
-- Queue worker (`php artisan queue:listen --tries=1`)
-- Log viewer (`php artisan pail`)
-- Vite dev server (`npm run dev`)
+- Laravel dev server (`sail artisan serve`)
+- Queue worker (`sail artisan queue:listen --tries=1`)
+- Log viewer (`sail artisan pail`)
+- Vite dev server (`sail npm run dev`)
 
 ### Frontend Commands
 ```bash
-npm run dev         # Start Vite development server with HMR
-npm run build       # Build frontend assets for production
-npm run build:ssr   # Build with SSR support
-npm run lint        # Run ESLint with auto-fix
-npm run format      # Format code with Prettier
-npm run format:check # Check formatting without fixing
+sail npm run dev         # Start Vite development server with HMR
+sail npm run build       # Build frontend assets for production
+sail npm run build:ssr   # Build with SSR support
+sail npm run lint        # Run ESLint with auto-fix
+sail npm run format      # Format code with Prettier
+sail npm run format:check # Check formatting without fixing
 ```
 
 ### Testing
 ```bash
-composer run test   # Clear config and run all tests
-php artisan test    # Run all Pest tests
-php artisan test tests/Feature/ExampleTest.php  # Run specific file
-php artisan test --filter=testName  # Run specific test
+sail composer run test   # Clear config and run all tests
+sail artisan test    # Run all Pest tests
+sail artisan test tests/Feature/ExampleTest.php  # Run specific file
+sail artisan test --filter=testName  # Run specific test
 ```
 
 ### Code Quality
@@ -94,11 +118,13 @@ vendor/bin/pint --dirty  # Format changed PHP files (always run before committin
 - **Wayfinder**: Laravel Wayfinder generates TypeScript route helpers in `resources/js/wayfinder/`
 
 ### Shared Inertia Props
-The following props are automatically shared with all Inertia pages (see `HandleInertiaRequests`):
+The following props are automatically shared with all Inertia pages via `app/Http/Middleware/HandleInertiaRequests.php`:
 - `name` - Application name from config
 - `quote` - Random inspiring quote with author
 - `auth.user` - Authenticated user object (or null)
 - `sidebarOpen` - Boolean sidebar state from cookie
+
+**Note:** Additional shared props (flash messages, notifications, etc.) may be added as features are implemented.
 
 ### UI Component Patterns
 - Uses `cn()` utility (tailwind-merge + clsx) for conditional class names
@@ -107,19 +133,24 @@ The following props are automatically shared with all Inertia pages (see `Handle
 - Dark mode support via `dark:` classes, managed by `useAppearance` composable
 - Appearance preference stored in unencrypted cookie (see `bootstrap/app.php` - `appearance` cookie is excluded from encryption)
 
-### Database
+### Database (Current State)
 - MySQL database (see `compose.yaml` for local Docker setup)
+- **Current tables:** users (with 2FA fields), sessions, password_reset_tokens, cache, jobs, telescope_entries, migrations
+- **Current models:** User.php only
 - Migrations in `database/migrations/`
-- Factories in `database/factories/`
-- Seeders in `database/seeders/`
-- Uses Telescope for debugging (migrations created)
+- Factories in `database/factories/` (UserFactory exists)
+- Seeders in `database/seeders/` (DatabaseSeeder exists)
 
-### Key Features
-- **Two-Factor Authentication** via Fortify
-- **Email Verification** via Fortify
+**Planned:** 12 domain models (Staff, Department, Unit, JobTitle, Station, BankDetail, MonthlyPayment, HeadcountVerification, AuditLog, ImportHistory, Discrepancy) - see `technical_blueprint.md`
+
+### Key Features (Currently Implemented)
+- **Two-Factor Authentication** via Laravel Fortify
+- **Email Verification** via Laravel Fortify
+- **User Profile Management** (name, email, password updates)
 - **Theme Switching** (light/dark/system) with cookie persistence
 - **Collapsible Sidebar** with state persistence
-- **Type-safe Routing** via Wayfinder
+- **Type-safe Routing** via Laravel Wayfinder
+- **Application Debugging** via Laravel Telescope
 
 ### Testing Structure
 - Uses Pest v4 with Laravel plugin
@@ -129,16 +160,25 @@ The following props are automatically shared with all Inertia pages (see `Handle
 
 ## Project-Specific Conventions
 
-### Frontend
-- Vue components: PascalCase filenames (e.g., `AppShell.vue`, `UserInfo.vue`)
-- Composables: camelCase with `use` prefix (e.g., `useAppearance.ts`)
+### Frontend (Established Patterns)
+- Vue components: PascalCase filenames (e.g., `AppShell.vue`, `Dashboard.vue`)
+- Composables: camelCase with `use` prefix (e.g., `useAppearance.ts`, `useTwoFactorAuth.ts`)
 - Utilities: camelCase functions (e.g., `cn()`, `urlIsActive()`)
 - Pages directory uses lowercase for folders (e.g., `pages/auth/`, `pages/settings/`)
 
-### Routing
+### Routing (Current Approach)
 - Named routes preferred over hardcoded paths
-- Wayfinder generates type-safe route helpers - use these in Vue components
-- Route files are split by concern (web, auth, settings)
+- Wayfinder generates type-safe route helpers in `resources/js/wayfinder/` - use these in Vue components
+- Route files are split by concern: `web.php` (main), `auth.php` (authentication), `settings.php` (user settings)
+- Server-side routing with Inertia.js (NOT REST API endpoints)
+
+### Backend (To Be Established)
+As domain features are implemented, follow these Laravel best practices:
+- Form Request classes for validation
+- Eloquent relationships with return type hints
+- Resource controllers for CRUD operations
+- Service layer for complex business logic (when needed)
+- Queue jobs for time-consuming operations
 
 ---
 
@@ -185,7 +225,7 @@ This application is a Laravel application and its main Laravel ecosystems packag
 - Do not change the application's dependencies without approval.
 
 ## Frontend Bundling
-- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `sail npm run build`, `sail npm run dev`, or `composer run dev`. Ask them.
 
 ## Replies
 - Be concise in your explanations - focus on what's important rather than explaining obvious details.
@@ -307,8 +347,8 @@ Route::get('/users', function () {
 
 ## Do Things the Laravel Way
 
-- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
-- If you're creating a generic PHP class, use `artisan make:class`.
+- Use `sail artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
+- If you're creating a generic PHP class, use `sail artisan make:class`.
 - Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
 
 ### Database
@@ -319,7 +359,7 @@ Route::get('/users', function () {
 - Use Laravel's query builder for very complex database operations.
 
 ### Model Creation
-- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `sail artisan make:model`.
 
 ### APIs & Eloquent Resources
 - For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
@@ -343,10 +383,10 @@ Route::get('/users', function () {
 ### Testing
 - When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
 - Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
-- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
+- When creating tests, make use of `sail artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
 
 ### Vite Error
-- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `sail npm run build` or ask the user to run `sail npm run dev` or `composer run dev`.
 
 
 === laravel/v12 rules ===
@@ -354,10 +394,10 @@ Route::get('/users', function () {
 ## Laravel 12
 
 - Use the `search-docs` tool to get version specific documentation.
-- Since Laravel 11, Laravel has a new streamlined file structure which this project uses.
+- Since Laravel 11+, Laravel has a new streamlined file structure which this project uses.
 
 ### Laravel 12 Structure
-- No middleware files in `app/Http/Middleware/`.
+- Custom middleware classes exist in `app/Http/Middleware/` (e.g., HandleInertiaRequests, HandleAppearance), but middleware **registration** happens in `bootstrap/app.php`.
 - `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
 - `bootstrap/providers.php` contains application specific service providers.
 - **No app\Console\Kernel.php** - use `bootstrap/app.php` or `routes/console.php` for console configuration.
@@ -365,7 +405,7 @@ Route::get('/users', function () {
 
 ### Database
 - When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
-- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
+- Laravel 11+ allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
 
 ### Models
 - Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
@@ -387,7 +427,7 @@ Route::get('/users', function () {
 - If you need to verify a feature is working, write or update a Unit / Feature test.
 
 ### Pest Tests
-- All tests must be written using Pest. Use `php artisan make:test --pest <name>`.
+- All tests must be written using Pest. Use `sail artisan make:test --pest <name>`.
 - You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files - these are core to the application.
 - Tests should test all of the happy paths, failure paths, and weird paths.
 - Tests live in the `tests/Feature` and `tests/Unit` directories.
@@ -400,9 +440,9 @@ it('is true', function () {
 
 ### Running Tests
 - Run the minimal number of tests using an appropriate filter before finalizing code edits.
-- To run all tests: `php artisan test`.
-- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
-- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+- To run all tests: `sail artisan test`.
+- To run all tests in a file: `sail artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `sail artisan test --filter=testName` (recommended after making a change to a related file).
 - When the tests relating to your changes are passing, ask the user if they would like to run the entire test suite to ensure everything is still passing.
 
 ### Pest Assertions
@@ -599,5 +639,5 @@ $pages->assertNoJavascriptErrors()->assertNoConsoleLogs();
 ## Test Enforcement
 
 - Every change must be programmatically tested. Write a new test or update an existing test, then run the affected tests to make sure they pass.
-- Run the minimum number of tests needed to ensure code quality and speed. Use `php artisan test` with a specific filename or filter.
+- Run the minimum number of tests needed to ensure code quality and speed. Use `sail artisan test` with a specific filename or filter.
 </laravel-boost-guidelines>
