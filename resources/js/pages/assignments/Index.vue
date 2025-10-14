@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 interface User {
     id: number;
@@ -44,7 +50,15 @@ interface Assignment {
 interface PaginatedData {
     data: Assignment[];
     links: any;
-    meta: any;
+    current_page: number;
+    from: number;
+    to: number;
+    per_page: number;
+    total: number;
+    last_page: number;
+    first_page_url: string;
+    last_page_url: string;
+    next_page_url: string | null;
 }
 
 interface Props {
@@ -80,7 +94,7 @@ const applyFilters = () => {
         {
             preserveState: true,
             preserveScroll: true,
-        }
+        },
     );
 };
 
@@ -140,7 +154,9 @@ const getStatusBadge = (status: string) => {
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold tracking-tight">Team Assignments</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">
+                        Team Assignments
+                    </h1>
                     <p class="mt-2 text-sm text-muted-foreground">
                         Manage field auditor assignments to stations
                     </p>
@@ -161,17 +177,22 @@ const getStatusBadge = (status: string) => {
             <Card>
                 <CardHeader>
                     <CardTitle>Filters</CardTitle>
-                    <CardDescription>Filter assignments by status, user, or station</CardDescription>
+                    <CardDescription
+                        >Filter assignments by status, user, or
+                        station</CardDescription
+                    >
                 </CardHeader>
                 <CardContent>
                     <div class="grid gap-4 sm:grid-cols-4">
                         <!-- Status Filter -->
                         <div>
-                            <label for="status" class="text-sm font-medium">Status</label>
+                            <label for="status" class="text-sm font-medium"
+                                >Status</label
+                            >
                             <select
                                 id="status"
                                 v-model="selectedStatus"
-                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 <option value="">All Statuses</option>
                                 <option value="active">Active</option>
@@ -183,14 +204,20 @@ const getStatusBadge = (status: string) => {
 
                         <!-- User Filter -->
                         <div>
-                            <label for="user" class="text-sm font-medium">User</label>
+                            <label for="user" class="text-sm font-medium"
+                                >User</label
+                            >
                             <select
                                 id="user"
                                 v-model="selectedUser"
-                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 <option value="">All Users</option>
-                                <option v-for="user in users" :key="user.id" :value="user.id">
+                                <option
+                                    v-for="user in users"
+                                    :key="user.id"
+                                    :value="user.id"
+                                >
                                     {{ user.name }}
                                 </option>
                             </select>
@@ -198,11 +225,13 @@ const getStatusBadge = (status: string) => {
 
                         <!-- Station Filter -->
                         <div>
-                            <label for="station" class="text-sm font-medium">Station</label>
+                            <label for="station" class="text-sm font-medium"
+                                >Station</label
+                            >
                             <select
                                 id="station"
                                 v-model="selectedStation"
-                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                class="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
                             >
                                 <option value="">All Stations</option>
                                 <option
@@ -217,8 +246,12 @@ const getStatusBadge = (status: string) => {
 
                         <!-- Actions -->
                         <div class="flex items-end gap-2">
-                            <Button @click="applyFilters" class="flex-1">Apply</Button>
-                            <Button @click="clearFilters" variant="outline">Clear</Button>
+                            <Button @click="applyFilters" class="flex-1"
+                                >Apply</Button
+                            >
+                            <Button @click="clearFilters" variant="outline"
+                                >Clear</Button
+                            >
                         </div>
                     </div>
                 </CardContent>
@@ -245,13 +278,25 @@ const getStatusBadge = (status: string) => {
                         >
                             <div class="flex-1">
                                 <div class="flex items-center gap-3">
-                                    <Badge :class="getStatusBadge(assignment.status).class">
-                                        {{ getStatusBadge(assignment.status).label }}
+                                    <Badge
+                                        :class="
+                                            getStatusBadge(assignment.status)
+                                                .class
+                                        "
+                                    >
+                                        {{
+                                            getStatusBadge(assignment.status)
+                                                .label
+                                        }}
                                     </Badge>
 
                                     <div>
-                                        <div class="font-medium">{{ assignment.user.name }}</div>
-                                        <div class="text-sm text-muted-foreground">
+                                        <div class="font-medium">
+                                            {{ assignment.user.name }}
+                                        </div>
+                                        <div
+                                            class="text-sm text-muted-foreground"
+                                        >
                                             {{ assignment.user.email }}
                                         </div>
                                     </div>
@@ -259,11 +304,17 @@ const getStatusBadge = (status: string) => {
 
                                 <div class="mt-3 grid gap-2 sm:grid-cols-3">
                                     <div>
-                                        <div class="text-xs text-muted-foreground">Station</div>
+                                        <div
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Station
+                                        </div>
                                         <div class="text-sm font-medium">
                                             {{ assignment.station.name }}
                                         </div>
-                                        <div class="text-xs text-muted-foreground">
+                                        <div
+                                            class="text-xs text-muted-foreground"
+                                        >
                                             {{ assignment.station.code }} •
                                             {{ assignment.station.city }},
                                             {{ assignment.station.region }}
@@ -271,32 +322,46 @@ const getStatusBadge = (status: string) => {
                                     </div>
 
                                     <div>
-                                        <div class="text-xs text-muted-foreground">Duration</div>
+                                        <div
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Duration
+                                        </div>
                                         <div class="text-sm font-medium">
                                             {{ assignment.start_date }}
                                             <span v-if="assignment.end_date">
                                                 → {{ assignment.end_date }}
                                             </span>
-                                            <span v-else class="text-muted-foreground">
+                                            <span
+                                                v-else
+                                                class="text-muted-foreground"
+                                            >
                                                 (No end date)
                                             </span>
                                         </div>
                                     </div>
 
                                     <div v-if="assignment.session">
-                                        <div class="text-xs text-muted-foreground">Session</div>
+                                        <div
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Session
+                                        </div>
                                         <div class="text-sm font-medium">
-                                            {{ assignment.session.session_name }}
+                                            {{
+                                                assignment.session.session_name
+                                            }}
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="mt-2 text-xs text-muted-foreground">
-                                    Assigned by {{ assignment.assigned_by.name }}
+                                    Assigned by
+                                    {{ assignment.assigned_by.name }}
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-2 ml-4">
+                            <div class="ml-4 flex items-center gap-2">
                                 <Button
                                     v-if="assignment.can_cancel"
                                     @click="cancelAssignment(assignment.id)"
@@ -323,11 +388,16 @@ const getStatusBadge = (status: string) => {
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                             />
                         </svg>
-                        <h3 class="mt-4 text-lg font-medium">No assignments found</h3>
+                        <h3 class="mt-4 text-lg font-medium">
+                            No assignments found
+                        </h3>
                         <p class="mt-2 text-sm text-muted-foreground">
                             Get started by creating a new team assignment.
                         </p>
-                        <Link href="/assignments/create" class="mt-4 inline-block">
+                        <Link
+                            href="/assignments/create"
+                            class="mt-4 inline-block"
+                        >
                             <Button>Create Assignment</Button>
                         </Link>
                     </div>
@@ -338,8 +408,9 @@ const getStatusBadge = (status: string) => {
                         class="mt-6 flex items-center justify-between border-t pt-4"
                     >
                         <div class="text-sm text-muted-foreground">
-                            Showing {{ assignments.meta.from }} to {{ assignments.meta.to }} of
-                            {{ assignments.meta.total }} assignments
+                            Showing {{ assignments?.from }} to
+                            {{ assignments?.to }} of
+                            {{ assignments?.total }} assignments
                         </div>
 
                         <div class="flex gap-2">
@@ -348,11 +419,13 @@ const getStatusBadge = (status: string) => {
                                 :key="link.label"
                                 :href="link.url"
                                 :class="[
-                                    'inline-flex items-center px-3 py-2 text-sm rounded-md',
+                                    'inline-flex items-center rounded-md px-3 py-2 text-sm',
                                     link.active
                                         ? 'bg-primary text-primary-foreground'
-                                        : 'bg-background border hover:bg-muted',
-                                    !link.url ? 'opacity-50 cursor-not-allowed' : '',
+                                        : 'border bg-background hover:bg-muted',
+                                    !link.url
+                                        ? 'cursor-not-allowed opacity-50'
+                                        : '',
                                 ]"
                                 :disabled="!link.url"
                                 preserve-scroll

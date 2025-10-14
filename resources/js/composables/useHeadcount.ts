@@ -128,18 +128,18 @@ export function useHeadcount() {
         captureError.value = null;
 
         const formData = new FormData();
-        formData.append('headcount_session_id', data.headcount_session_id.toString());
-        formData.append('staff_id', data.staff_id.toString());
-        formData.append('station_id', data.station_id.toString());
+        formData.append('headcount_session_id', data.headcount_session_id?.toString());
+        formData.append('staff_id', data.staff_id?.toString());
+        formData.append('station_id', data.station_id?.toString());
         formData.append('verification_status', data.verification_status);
         formData.append('photo', data.photo);
 
         if (data.latitude !== undefined) {
-            formData.append('latitude', data.latitude.toString());
+            formData.append('latitude', data.latitude?.toString());
         }
 
         if (data.longitude !== undefined) {
-            formData.append('longitude', data.longitude.toString());
+            formData.append('longitude', data.longitude?.toString());
         }
 
         if (data.remarks) {
