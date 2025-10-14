@@ -26,3 +26,6 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+nla_forensic_audit_requirements.md
+technical_blueprint.md
+TODOS.md
