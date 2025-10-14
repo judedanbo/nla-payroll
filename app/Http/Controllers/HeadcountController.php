@@ -283,7 +283,7 @@ class HeadcountController extends Controller
             ],
             'stations' => $stations,
             'staff' => $staff,
-            'selected_station_id' => $request->station_id,
+            'selected_station_id' => $request->filled('station_id') ? (int) $request->station_id : null,
         ]);
     }
 
