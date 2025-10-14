@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ImportedRecordStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('import_history_id')->constrained()->cascadeOnDelete();
             $table->morphs('recordable'); // Polymorphic relation to Staff, BankDetail, etc. (automatically indexed)
-            $table->enum('status', ['pending', 'processed', 'failed'])->default('pending');
+            $table->enum('status', ImportedRecordStatus::cases())->default(ImportedRecordStatus::Pending);
             $table->json('original_data'); // Original CSV data
             $table->timestamps();
 

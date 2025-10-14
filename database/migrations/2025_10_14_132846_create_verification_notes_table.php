@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\VerificationNoteType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,7 +17,7 @@ return new class extends Migration
             $table->foreignId('headcount_verification_id')->constrained()->cascadeOnDelete();
             $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
             $table->text('note_content');
-            $table->enum('note_type', ['general', 'discrepancy', 'concern', 'clarification'])->default('general');
+            $table->enum('note_type', VerificationNoteType::cases())->default(VerificationNoteType::General);
             $table->timestamps();
             $table->softDeletes();
 

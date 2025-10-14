@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TeamAssignmentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,7 @@ class TeamAssignment extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'status' => TeamAssignmentStatus::class,
         ];
     }
 
@@ -77,7 +79,7 @@ class TeamAssignment extends Model
      */
     public function isActive(): bool
     {
-        return $this->status === 'active';
+        return $this->status === TeamAssignmentStatus::Active;
     }
 
     /**
@@ -85,7 +87,7 @@ class TeamAssignment extends Model
      */
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === TeamAssignmentStatus::Completed;
     }
 
     /**
@@ -93,7 +95,7 @@ class TeamAssignment extends Model
      */
     public function isCancelled(): bool
     {
-        return $this->status === 'cancelled';
+        return $this->status === TeamAssignmentStatus::Cancelled;
     }
 
     /**
@@ -102,7 +104,7 @@ class TeamAssignment extends Model
     public function markCompleted(): bool
     {
         return $this->update([
-            'status' => 'completed',
+            'status' => TeamAssignmentStatus::Completed,
             'end_date' => now(),
         ]);
     }
@@ -113,7 +115,7 @@ class TeamAssignment extends Model
     public function cancel(): bool
     {
         return $this->update([
-            'status' => 'cancelled',
+            'status' => TeamAssignmentStatus::Cancelled,
             'end_date' => now(),
         ]);
     }

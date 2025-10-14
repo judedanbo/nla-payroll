@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentElementType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +24,7 @@ class PaymentElement extends Model
     {
         return [
             'amount' => 'decimal:2',
+            'element_type' => PaymentElementType::class,
         ];
     }
 
@@ -40,7 +42,7 @@ class PaymentElement extends Model
      */
     public function isDeduction(): bool
     {
-        return $this->element_type === 'deduction';
+        return $this->element_type === PaymentElementType::Deduction;
     }
 
     /**
@@ -48,7 +50,7 @@ class PaymentElement extends Model
      */
     public function isAllowance(): bool
     {
-        return $this->element_type === 'allowance';
+        return $this->element_type === PaymentElementType::Allowance;
     }
 
     /**
@@ -56,7 +58,7 @@ class PaymentElement extends Model
      */
     public function isBasicSalary(): bool
     {
-        return $this->element_type === 'basic_salary';
+        return $this->element_type === PaymentElementType::BasicSalary;
     }
 
     /**

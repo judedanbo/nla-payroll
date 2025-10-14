@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TeamAssignmentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->foreignId('assigned_by')->constrained('users')->cascadeOnDelete();
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->enum('status', ['active', 'completed', 'cancelled'])->default('active');
+            $table->enum('status', TeamAssignmentStatus::cases())->default(TeamAssignmentStatus::Active);
             $table->timestamps();
             $table->softDeletes();
 

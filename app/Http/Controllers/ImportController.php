@@ -123,7 +123,7 @@ class ImportController extends Controller
 
         // Create import history record
         $importHistory = ImportHistory::create([
-            'user_id' => auth()->id(),
+            'uploaded_by' => auth()->id(),
             'import_type' => $importType,
             'file_name' => $fileName,
             'file_path' => $filePath,
@@ -131,11 +131,6 @@ class ImportController extends Controller
             'total_records' => 0,
             'successful_records' => 0,
             'failed_records' => 0,
-            'column_mapping' => $validated['column_mapping'],
-            'options' => [
-                'skip_duplicates' => $validated['skip_duplicates'] ?? true,
-                'validate_only' => $validated['validate_only'] ?? false,
-            ],
         ]);
 
         // Dispatch queue job

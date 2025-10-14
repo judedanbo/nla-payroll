@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ImportedRecordStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,6 +25,7 @@ class ImportedRecord extends Model
     {
         return [
             'original_data' => 'array',
+            'status' => ImportedRecordStatus::class,
         ];
     }
 
@@ -39,6 +41,6 @@ class ImportedRecord extends Model
 
     public function isProcessed(): bool
     {
-        return $this->status === 'processed';
+        return $this->status === ImportedRecordStatus::Processed;
     }
 }

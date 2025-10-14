@@ -19,6 +19,7 @@ class ImportHistoryFactory extends Factory
             'uploaded_by' => User::factory(),
             'file_name' => fake()->word().'-'.fake()->date().'.csv',
             'file_path' => 'imports/'.fake()->uuid().'.csv',
+            'import_type' => fake()->randomElement(['staff', 'bank_details', 'payroll']),
             'total_records' => $total,
             'successful_records' => $successful,
             'failed_records' => $total - $successful,

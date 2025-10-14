@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\DiscrepancyStatus;
+use App\Enums\DiscrepancyType;
+use App\Enums\Severity;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,10 +17,10 @@ return new class extends Migration
         Schema::create('discrepancies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('staff_id')->constrained('staff')->cascadeOnDelete();
-            $table->enum('discrepancy_type', ['ghost_employee', 'duplicate_bank_account', 'station_mismatch', 'salary_anomaly', 'missing_data', 'unregistered_personnel', 'other']);
-            $table->enum('severity', ['low', 'medium', 'high', 'critical'])->default('medium');
+            $table->enum('discrepancy_type', DiscrepancyType::cases());
+            $table->enum('severity', Severity::cases())->default(Severity::Medium);
             $table->text('description');
-            $table->enum('status', ['open', 'under_review', 'resolved', 'dismissed'])->default('open');
+            $table->enum('status', DiscrepancyStatus::cases())->default(DiscrepancyStatus::Open);
             $table->foreignId('detected_by')->constrained('users')->cascadeOnDelete();
             $table->timestamp('detected_at');
             $table->timestamps();

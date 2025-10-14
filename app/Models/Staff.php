@@ -2,6 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\DiscrepancyStatus;
+use App\Enums\DiscrepancyType;
+use App\Enums\EmploymentStatus;
+use App\Enums\EmploymentType;
+use App\Enums\Gender;
+use App\Enums\Severity;
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -60,6 +67,9 @@ class Staff extends Model
             'last_verified_at' => 'datetime',
             'is_ghost' => 'boolean',
             'is_active' => 'boolean',
+            'gender' => Gender::class,
+            'employment_status' => EmploymentStatus::class,
+            'employment_type' => EmploymentType::class,
         ];
     }
 
@@ -187,7 +197,7 @@ class Staff extends Model
             'station_id' => $this->station_id,
             'verified_at' => now(),
             'verification_location' => $location,
-            'verification_status' => 'verified',
+            'verification_status' => VerificationStatus::Present,
         ]);
     }
 
@@ -203,16 +213,16 @@ class Staff extends Model
         $this->discrepancies()->create([
             'station_id' => $this->station_id,
             'user_id' => auth()->id(),
-            'discrepancy_type' => 'ghost_employee',
+            'discrepancy_type' => DiscrepancyType::GhostEmployee,
             'description' => $reason ?? 'Staff flagged as potential ghost employee',
-            'severity' => 'high',
-            'status' => 'open',
+            'severity' => Severity::High,
+            'status' => DiscrepancyStatus::Open,
         ]);
     }
 
     public function getDiscrepancies()
     {
-        return $this->discrepancies()->where('status', '!=', 'resolved')->get();
+        return $this->discrepancies()->where('status', '!=', DiscrepancyStatus::Resolved)->get();
     }
 
     // Assignment Methods
@@ -283,7 +293,7 @@ class Staff extends Model
 
     public function isActive(): bool
     {
-        return $this->is_active && $this->employment_status === 'active';
+        return $this->is_active && $this->employment_status === EmploymentStatus::Active;
     }
 
     public function getPrimaryBankAccount(): ?BankDetail

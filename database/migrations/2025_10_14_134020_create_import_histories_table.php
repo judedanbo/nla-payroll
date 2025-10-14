@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ImportStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +20,7 @@ return new class extends Migration
             $table->integer('total_records')->default(0);
             $table->integer('successful_records')->default(0);
             $table->integer('failed_records')->default(0);
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ImportStatus::cases())->default(ImportStatus::Pending);
             $table->timestamp('started_at')->nullable();
             $table->timestamp('completed_at')->nullable();
             $table->timestamps();

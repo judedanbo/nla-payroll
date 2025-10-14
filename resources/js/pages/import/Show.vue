@@ -44,7 +44,7 @@ const props = defineProps<Props>();
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'Import', href: '/import' },
     { title: 'History', href: '/import/history' },
-    { title: `Import #${props.import.id}`, href: `/import/${props.import.id}` },
+    { title: `Import #${props.props.import.id}`, href: `/import/${props.props.import.id}` },
 ];
 
 const showErrorDetails = ref<number | null>(null);
@@ -62,7 +62,7 @@ const rollbackImport = () => {
     isRollingBack.value = true;
 
     router.post(
-        `/import/${props.import.id}/rollback`,
+        `/import/${props.props.import.id}/rollback`,
         {},
         {
             onSuccess: () => {
@@ -81,7 +81,7 @@ const formatDate = (dateString: string) => {
 </script>
 
 <template>
-    <Head :title="`Import #${import.id}`" />
+    <Head :title="`Import #${props.props.import.id}`" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-6">
@@ -89,24 +89,24 @@ const formatDate = (dateString: string) => {
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl font-bold tracking-tight">
-                        Import #{{ import.id }}
+                        Import #{{ props.props.import.id }}
                     </h1>
                     <p class="mt-2 text-sm text-muted-foreground">
-                        {{ import.file_name }} • {{ import.import_type.replace('_', ' ').toUpperCase() }}
+                        {{ props.props.import.file_name }} • {{ props.props.import.import_type.replace('_', ' ').toUpperCase() }}
                     </p>
                 </div>
 
                 <div class="flex gap-2">
                     <a
-                        v-if="import.failed_records > 0"
-                        :href="`/import/${import.id}/errors`"
+                        v-if="props.props.import.failed_records > 0"
+                        :href="`/import/${props.props.import.id}/errors`"
                         class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent"
                     >
                         Download Errors
                     </a>
 
                     <button
-                        v-if="import.can_rollback"
+                        v-if="props.props.import.can_rollback"
                         @click="rollbackImport"
                         :disabled="isRollingBack"
                         class="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
@@ -119,10 +119,10 @@ const formatDate = (dateString: string) => {
             <!-- Progress -->
             <div class="rounded-xl border bg-card p-6">
                 <ImportProgress
-                    :status="import.status"
-                    :total-records="import.total_records"
-                    :successful-records="import.successful_records"
-                    :failed-records="import.failed_records"
+                    :status="props.props.import.status"
+                    :total-records="props.props.import.total_records"
+                    :successful-records="props.props.import.successful_records"
+                    :failed-records="props.props.import.failed_records"
                 />
             </div>
 
@@ -136,34 +136,34 @@ const formatDate = (dateString: string) => {
                         <div>
                             <dt class="text-muted-foreground">Import Type</dt>
                             <dd class="font-medium">
-                                {{ import.import_type.replace('_', ' ').toUpperCase() }}
+                                {{ props.props.import.import_type.replace('_', ' ').toUpperCase() }}
                             </dd>
                         </div>
 
                         <div>
                             <dt class="text-muted-foreground">File Name</dt>
-                            <dd class="font-medium">{{ import.file_name }}</dd>
+                            <dd class="font-medium">{{ props.props.import.file_name }}</dd>
                         </div>
 
                         <div>
                             <dt class="text-muted-foreground">Imported By</dt>
-                            <dd class="font-medium">{{ import.user.name }}</dd>
+                            <dd class="font-medium">{{ props.props.import.user.name }}</dd>
                         </div>
 
                         <div>
                             <dt class="text-muted-foreground">Started At</dt>
-                            <dd class="font-medium">{{ formatDate(import.created_at) }}</dd>
+                            <dd class="font-medium">{{ formatDate(props.import.created_at) }}</dd>
                         </div>
 
-                        <div v-if="import.completed_at">
+                        <div v-if="props.import.completed_at">
                             <dt class="text-muted-foreground">Completed At</dt>
-                            <dd class="font-medium">{{ formatDate(import.completed_at) }}</dd>
+                            <dd class="font-medium">{{ formatDate(props.import.completed_at) }}</dd>
                         </div>
 
-                        <div v-if="import.rolled_back_at">
+                        <div v-if="props.import.rolled_back_at">
                             <dt class="text-muted-foreground">Rolled Back At</dt>
                             <dd class="font-medium text-red-600 dark:text-red-400">
-                                {{ formatDate(import.rolled_back_at) }}
+                                {{ formatDate(props.import.rolled_back_at) }}
                             </dd>
                         </div>
                     </dl>
@@ -177,21 +177,21 @@ const formatDate = (dateString: string) => {
                         <div>
                             <dt class="text-muted-foreground">Skip Duplicates</dt>
                             <dd class="font-medium">
-                                {{ import.options?.skip_duplicates ? 'Yes' : 'No' }}
+                                {{ props.props.import.options?.skip_duplicates ? 'Yes' : 'No' }}
                             </dd>
                         </div>
 
                         <div>
                             <dt class="text-muted-foreground">Validate Only</dt>
                             <dd class="font-medium">
-                                {{ import.options?.validate_only ? 'Yes' : 'No' }}
+                                {{ props.props.import.options?.validate_only ? 'Yes' : 'No' }}
                             </dd>
                         </div>
 
-                        <div v-if="import.options?.anomalies">
+                        <div v-if="props.import.options?.anomalies">
                             <dt class="text-muted-foreground">Anomalies Detected</dt>
                             <dd class="font-medium text-yellow-600 dark:text-yellow-400">
-                                {{ import.options.anomalies.length }} anomalies
+                                {{ props.props.import.options.anomalies.length }} anomalies
                             </dd>
                         </div>
                     </dl>
@@ -199,18 +199,18 @@ const formatDate = (dateString: string) => {
             </div>
 
             <!-- Errors -->
-            <div v-if="import.errors.length > 0" class="rounded-xl border bg-card p-6">
+            <div v-if="props.import.errors.length > 0" class="rounded-xl border bg-card p-6">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-xl font-semibold">Import Errors</h2>
                     <span class="text-sm text-muted-foreground">
-                        Showing {{ import.errors.length }}
-                        {{ import.has_more_errors ? `of ${import.failed_records}` : '' }} errors
+                        Showing {{ props.props.import.errors.length }}
+                        {{ props.props.import.has_more_errors ? `of ${props.import.failed_records}` : '' }} errors
                     </span>
                 </div>
 
                 <div class="space-y-2">
                     <div
-                        v-for="error in import.errors"
+                        v-for="error in props.import.errors"
                         :key="error.id"
                         class="border rounded-lg overflow-hidden"
                     >
@@ -260,12 +260,12 @@ const formatDate = (dateString: string) => {
                     </div>
                 </div>
 
-                <div v-if="import.has_more_errors" class="mt-4 text-center">
+                <div v-if="props.import.has_more_errors" class="mt-4 text-center">
                     <p class="text-sm text-muted-foreground">
-                        There are more errors. Download the error CSV to see all {{ import.failed_records }} errors.
+                        There are more errors. Download the error CSV to see all {{ props.props.import.failed_records }} errors.
                     </p>
                     <a
-                        :href="`/import/${import.id}/errors`"
+                        :href="`/import/${props.import.id}/errors`"
                         class="inline-flex items-center mt-2 text-sm text-primary hover:underline"
                     >
                         Download Full Error Report
@@ -275,7 +275,7 @@ const formatDate = (dateString: string) => {
 
             <!-- No Errors -->
             <div
-                v-else-if="import.status === 'completed'"
+                v-else-if="props.import.status === 'completed'"
                 class="rounded-xl border bg-card p-12 text-center"
             >
                 <svg

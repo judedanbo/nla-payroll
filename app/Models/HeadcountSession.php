@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\HeadcountSessionStatus;
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +30,7 @@ class HeadcountSession extends Model
         return [
             'start_date' => 'date',
             'end_date' => 'date',
+            'status' => HeadcountSessionStatus::class,
         ];
     }
 
@@ -50,7 +53,7 @@ class HeadcountSession extends Model
      */
     public function isActive(): bool
     {
-        return $this->status === 'in_progress';
+        return $this->status === HeadcountSessionStatus::InProgress;
     }
 
     /**
@@ -58,7 +61,7 @@ class HeadcountSession extends Model
      */
     public function isCompleted(): bool
     {
-        return $this->status === 'completed';
+        return $this->status === HeadcountSessionStatus::Completed;
     }
 
     /**
@@ -67,7 +70,7 @@ class HeadcountSession extends Model
     public function start(): void
     {
         $this->update([
-            'status' => 'in_progress',
+            'status' => HeadcountSessionStatus::InProgress,
             'start_date' => $this->start_date ?? now(),
         ]);
     }
@@ -78,7 +81,7 @@ class HeadcountSession extends Model
     public function complete(): void
     {
         $this->update([
-            'status' => 'completed',
+            'status' => HeadcountSessionStatus::Completed,
             'end_date' => now(),
         ]);
     }
@@ -89,7 +92,7 @@ class HeadcountSession extends Model
     public function cancel(?string $reason = null): void
     {
         $this->update([
-            'status' => 'cancelled',
+            'status' => HeadcountSessionStatus::Cancelled,
             'notes' => $reason ?? $this->notes,
         ]);
     }
@@ -100,11 +103,12 @@ class HeadcountSession extends Model
     public function getVerificationStats(): array
     {
         return [
-            'total' => $this->verifications()->count(),
-            'present' => $this->verifications()->where('verification_status', 'present')->count(),
-            'absent' => $this->verifications()->where('verification_status', 'absent')->count(),
-            'on_leave' => $this->verifications()->where('verification_status', 'on_leave')->count(),
-            'ghost' => $this->verifications()->where('verification_status', 'ghost')->count(),
+            'total_staff' => Staff::where('is_active', true)->count(),
+            'verified_count' => $this->verifications()->count(),
+            'present_count' => $this->verifications()->where('verification_status', VerificationStatus::Present)->count(),
+            'absent_count' => $this->verifications()->where('verification_status', VerificationStatus::Absent)->count(),
+            'on_leave_count' => $this->verifications()->where('verification_status', VerificationStatus::OnLeave)->count(),
+            'ghost_count' => $this->verifications()->where('verification_status', VerificationStatus::Ghost)->count(),
         ];
     }
 

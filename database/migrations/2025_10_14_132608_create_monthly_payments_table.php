@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +19,7 @@ return new class extends Migration
             $table->decimal('gross_amount', 12, 2);
             $table->decimal('deductions_total', 12, 2)->default(0);
             $table->decimal('net_amount', 12, 2);
-            $table->enum('payment_status', ['pending', 'approved', 'processing', 'paid', 'failed'])->default('pending');
+            $table->enum('payment_status', PaymentStatus::cases())->default(PaymentStatus::Pending);
             $table->date('payment_date')->nullable();
             $table->string('payment_reference')->nullable();
             $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();

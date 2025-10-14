@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ResolutionOutcome;
+use App\Enums\ResolutionType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,9 +18,9 @@ return new class extends Migration
             $table->foreignId('discrepancy_id')->unique()->constrained()->cascadeOnDelete();
             $table->foreignId('resolved_by')->constrained('users')->cascadeOnDelete();
             $table->timestamp('resolved_at');
-            $table->enum('resolution_type', ['corrected', 'verified_valid', 'staff_removed', 'data_updated', 'no_action_required', 'escalated']);
+            $table->enum('resolution_type', ResolutionType::cases());
             $table->text('resolution_notes');
-            $table->enum('outcome', ['resolved', 'partially_resolved', 'unresolved'])->default('resolved');
+            $table->enum('outcome', ResolutionOutcome::cases())->default(ResolutionOutcome::Resolved);
             $table->timestamps();
             $table->softDeletes();
 

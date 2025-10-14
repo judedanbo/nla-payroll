@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentElementType;
+use App\Enums\PaymentStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +38,7 @@ class MonthlyPayment extends Model
             'gross_amount' => 'decimal:2',
             'deductions_total' => 'decimal:2',
             'net_amount' => 'decimal:2',
+            'payment_status' => PaymentStatus::class,
         ];
     }
 
@@ -63,7 +66,7 @@ class MonthlyPayment extends Model
      */
     public function isPaid(): bool
     {
-        return $this->payment_status === 'paid';
+        return $this->payment_status === PaymentStatus::Paid;
     }
 
     /**
@@ -71,7 +74,7 @@ class MonthlyPayment extends Model
      */
     public function isApproved(): bool
     {
-        return in_array($this->payment_status, ['approved', 'processing', 'paid']);
+        return in_array($this->payment_status, [PaymentStatus::Approved, PaymentStatus::Processing, PaymentStatus::Paid]);
     }
 
     /**
@@ -80,7 +83,7 @@ class MonthlyPayment extends Model
     public function approve(int $userId): void
     {
         $this->update([
-            'payment_status' => 'approved',
+            'payment_status' => PaymentStatus::Approved,
             'approved_by' => $userId,
             'approved_at' => now(),
         ]);
@@ -92,7 +95,7 @@ class MonthlyPayment extends Model
     public function markAsPaid(string $reference, ?string $notes = null): void
     {
         $this->update([
-            'payment_status' => 'paid',
+            'payment_status' => PaymentStatus::Paid,
             'payment_date' => now(),
             'payment_reference' => $reference,
             'notes' => $notes ?? $this->notes,
@@ -105,7 +108,7 @@ class MonthlyPayment extends Model
     public function markAsFailed(?string $reason = null): void
     {
         $this->update([
-            'payment_status' => 'failed',
+            'payment_status' => PaymentStatus::Failed,
             'notes' => $reason ?? $this->notes,
         ]);
     }
@@ -116,11 +119,11 @@ class MonthlyPayment extends Model
     public function calculateTotals(): void
     {
         $basicAndAllowances = $this->paymentElements()
-            ->whereIn('element_type', ['basic_salary', 'allowance'])
+            ->whereIn('element_type', [PaymentElementType::BasicSalary, PaymentElementType::Allowance])
             ->sum('amount');
 
         $deductions = $this->paymentElements()
-            ->where('element_type', 'deduction')
+            ->where('element_type', PaymentElementType::Deduction)
             ->sum('amount');
 
         $this->update([
@@ -137,13 +140,13 @@ class MonthlyPayment extends Model
     {
         return [
             'basic_salary' => $this->paymentElements()
-                ->where('element_type', 'basic_salary')
+                ->where('element_type', PaymentElementType::BasicSalary)
                 ->sum('amount'),
             'allowances' => $this->paymentElements()
-                ->where('element_type', 'allowance')
+                ->where('element_type', PaymentElementType::Allowance)
                 ->sum('amount'),
             'deductions' => $this->paymentElements()
-                ->where('element_type', 'deduction')
+                ->where('element_type', PaymentElementType::Deduction)
                 ->sum('amount'),
         ];
     }

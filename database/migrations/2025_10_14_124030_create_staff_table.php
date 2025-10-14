@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\EmploymentStatus;
+use App\Enums\EmploymentType;
+use App\Enums\Gender;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +29,7 @@ return new class extends Migration
             $table->string('full_name');
 
             $table->date('date_of_birth')->nullable();
-            $table->enum('gender', ['male', 'female', 'other']);
+            $table->enum('gender', Gender::cases());
             $table->string('marital_status')->nullable();
 
             // Contact Information
@@ -42,8 +45,8 @@ return new class extends Migration
             // Employment Details
             $table->date('date_of_hire')->nullable();
             $table->date('date_of_termination')->nullable();
-            $table->enum('employment_status', ['active', 'on_leave', 'suspended', 'terminated', 'retired'])->default('active');
-            $table->enum('employment_type', ['permanent', 'contract', 'temporary', 'intern'])->default('permanent');
+            $table->enum('employment_status', EmploymentStatus::cases())->default(EmploymentStatus::Active);
+            $table->enum('employment_type', EmploymentType::cases())->default(EmploymentType::Permanent);
             $table->decimal('current_salary', 12, 2)->nullable();
 
             // Verification Status

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +18,7 @@ return new class extends Migration
             $table->foreignId('staff_id')->constrained('staff')->cascadeOnDelete();
             $table->foreignId('verified_by')->constrained('users')->cascadeOnDelete();
             $table->timestamp('verified_at');
-            $table->enum('verification_status', ['present', 'absent', 'on_leave', 'ghost'])->default('present');
+            $table->enum('verification_status', VerificationStatus::cases())->default(VerificationStatus::Present);
             $table->string('location')->nullable(); // GPS location or office name
             $table->text('remarks')->nullable();
             $table->timestamps();

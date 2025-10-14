@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PaymentElementType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ return new class extends Migration
         Schema::create('payment_elements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('monthly_payment_id')->constrained()->cascadeOnDelete();
-            $table->enum('element_type', ['basic_salary', 'allowance', 'deduction']);
+            $table->enum('element_type', PaymentElementType::cases());
             $table->string('element_name'); // e.g., 'Housing Allowance', 'Transport', 'Tax', 'SSNIT'
             $table->decimal('amount', 12, 2);
             $table->text('notes')->nullable();

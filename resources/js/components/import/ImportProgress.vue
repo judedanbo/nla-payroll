@@ -201,14 +201,13 @@ const statusIcon = computed(() => {
                 <div class="h-16 w-16">
                     <svg viewBox="0 0 36 36" class="circular-chart">
                         <path
-                            class="circle-bg"
+                            class="circle-bg text-muted"
                             d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="3"
-                            class="text-muted"
                         />
                         <path
                             class="circle"

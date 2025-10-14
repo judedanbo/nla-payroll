@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VerificationNoteType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +19,13 @@ class VerificationNote extends Model
         'note_content',
         'note_type',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'note_type' => VerificationNoteType::class,
+        ];
+    }
 
     // Relationships
 
@@ -38,7 +46,7 @@ class VerificationNote extends Model
      */
     public function isDiscrepancy(): bool
     {
-        return $this->note_type === 'discrepancy';
+        return $this->note_type === VerificationNoteType::Discrepancy;
     }
 
     /**
@@ -46,7 +54,7 @@ class VerificationNote extends Model
      */
     public function isConcern(): bool
     {
-        return $this->note_type === 'concern';
+        return $this->note_type === VerificationNoteType::Concern;
     }
 
     /**

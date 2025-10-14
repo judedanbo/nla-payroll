@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\DiscrepancyStatus;
+use App\Enums\DiscrepancyType;
+use App\Enums\Severity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,6 +31,9 @@ class Discrepancy extends Model
     {
         return [
             'detected_at' => 'datetime',
+            'discrepancy_type' => DiscrepancyType::class,
+            'severity' => Severity::class,
+            'status' => DiscrepancyStatus::class,
         ];
     }
 
@@ -60,7 +66,7 @@ class Discrepancy extends Model
      */
     public function isOpen(): bool
     {
-        return $this->status === 'open';
+        return $this->status === DiscrepancyStatus::Open;
     }
 
     /**
@@ -68,7 +74,7 @@ class Discrepancy extends Model
      */
     public function isResolved(): bool
     {
-        return $this->status === 'resolved';
+        return $this->status === DiscrepancyStatus::Resolved;
     }
 
     /**
@@ -76,7 +82,7 @@ class Discrepancy extends Model
      */
     public function isCritical(): bool
     {
-        return $this->severity === 'critical';
+        return $this->severity === Severity::Critical;
     }
 
     /**
@@ -84,7 +90,7 @@ class Discrepancy extends Model
      */
     public function markUnderReview(): void
     {
-        $this->update(['status' => 'under_review']);
+        $this->update(['status' => DiscrepancyStatus::UnderReview]);
     }
 
     /**
@@ -92,7 +98,7 @@ class Discrepancy extends Model
      */
     public function markResolved(): void
     {
-        $this->update(['status' => 'resolved']);
+        $this->update(['status' => DiscrepancyStatus::Resolved]);
     }
 
     /**
@@ -100,7 +106,7 @@ class Discrepancy extends Model
      */
     public function dismiss(?string $reason = null): void
     {
-        $this->update(['status' => 'dismissed']);
+        $this->update(['status' => DiscrepancyStatus::Dismissed]);
 
         if ($reason) {
             $this->notes()->create([

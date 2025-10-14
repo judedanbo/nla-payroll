@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VerificationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,7 @@ class HeadcountVerification extends Model
     {
         return [
             'verified_at' => 'datetime',
+            'verification_status' => VerificationStatus::class,
         ];
     }
 
@@ -64,7 +66,7 @@ class HeadcountVerification extends Model
      */
     public function isPresent(): bool
     {
-        return $this->verification_status === 'present';
+        return $this->verification_status === VerificationStatus::Present;
     }
 
     /**
@@ -72,7 +74,7 @@ class HeadcountVerification extends Model
      */
     public function isGhost(): bool
     {
-        return $this->verification_status === 'ghost';
+        return $this->verification_status === VerificationStatus::Ghost;
     }
 
     /**
@@ -81,7 +83,7 @@ class HeadcountVerification extends Model
     public function markAsGhost(?string $reason = null): void
     {
         $this->update([
-            'verification_status' => 'ghost',
+            'verification_status' => VerificationStatus::Ghost,
             'remarks' => $reason ?? $this->remarks,
         ]);
 

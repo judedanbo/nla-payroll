@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ResolutionOutcome;
+use App\Enums\ResolutionType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,6 +27,8 @@ class DiscrepancyResolution extends Model
     {
         return [
             'resolved_at' => 'datetime',
+            'resolution_type' => ResolutionType::class,
+            'outcome' => ResolutionOutcome::class,
         ];
     }
 
@@ -47,7 +51,7 @@ class DiscrepancyResolution extends Model
      */
     public function isResolved(): bool
     {
-        return $this->outcome === 'resolved';
+        return $this->outcome === ResolutionOutcome::Resolved;
     }
 
     /**
@@ -55,7 +59,7 @@ class DiscrepancyResolution extends Model
      */
     public function wasEscalated(): bool
     {
-        return $this->resolution_type === 'escalated';
+        return $this->resolution_type === ResolutionType::Escalated;
     }
 
     /**
