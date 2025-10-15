@@ -52,17 +52,13 @@ class CSVImportService
         return match ($importType) {
             'staff' => [
                 'staff_number' => 'Staff Number',
-                'first_name' => 'First Name',
-                'middle_name' => 'Middle Name (Optional)',
-                'last_name' => 'Last Name',
+                'full_name' => 'Full Name',
+
                 'date_of_birth' => 'Date of Birth',
-                'national_id' => 'National ID',
                 'gender' => 'Gender',
                 'marital_status' => 'Marital Status',
                 'email' => 'Email (Optional)',
-                'phone_primary' => 'Primary Phone',
-                'phone_secondary' => 'Secondary Phone (Optional)',
-                'address' => 'Address',
+
                 'city' => 'City',
                 'region' => 'Region',
                 'department_id' => 'Department',
@@ -109,8 +105,10 @@ class CSVImportService
 
             // Try exact match first
             foreach ($expectedColumns as $dbField => $label) {
-                if ($this->normalizeColumnName($label) === $normalizedCsvHeader ||
-                    $this->normalizeColumnName($dbField) === $normalizedCsvHeader) {
+                if (
+                    $this->normalizeColumnName($label) === $normalizedCsvHeader ||
+                    $this->normalizeColumnName($dbField) === $normalizedCsvHeader
+                ) {
                     $mapping[$csvHeader] = $dbField;
                     break;
                 }
@@ -122,10 +120,12 @@ class CSVImportService
                     $normalizedDbField = $this->normalizeColumnName($dbField);
                     $normalizedLabel = $this->normalizeColumnName($label);
 
-                    if (Str::contains($normalizedCsvHeader, $normalizedDbField) ||
+                    if (
+                        Str::contains($normalizedCsvHeader, $normalizedDbField) ||
                         Str::contains($normalizedDbField, $normalizedCsvHeader) ||
                         Str::contains($normalizedCsvHeader, $normalizedLabel) ||
-                        Str::contains($normalizedLabel, $normalizedCsvHeader)) {
+                        Str::contains($normalizedLabel, $normalizedCsvHeader)
+                    ) {
                         $mapping[$csvHeader] = $dbField;
                         break;
                     }

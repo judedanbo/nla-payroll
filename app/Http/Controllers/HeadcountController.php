@@ -249,8 +249,8 @@ class HeadcountController extends Controller
                 'code' => $station->code,
                 'city' => $station->city,
                 'staff_count' => $station->staff_count,
-                'latitude' => $station->latitude,
-                'longitude' => $station->longitude,
+                // 'latitude' => $station->latitude,
+                // 'longitude' => $station->longitude,
                 'gps_boundary' => $station->gps_boundary,
             ]);
 
@@ -297,9 +297,9 @@ class HeadcountController extends Controller
             'staff_id' => 'required|exists:staff,id',
             'station_id' => 'required|exists:stations,id',
             'verification_status' => 'required|in:present,absent,on_leave,ghost',
-            'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180',
-            'photo' => 'required|image|max:5120', // 5MB max
+            // 'latitude' => 'nullable|numeric|between:-90,90',
+            // 'longitude' => 'nullable|numeric|between:-180,180',
+            'photo' => 'image|max:5120', // 5MB max
             'remarks' => 'nullable|string|max:1000',
         ]);
 
@@ -313,13 +313,13 @@ class HeadcountController extends Controller
         }
 
         // Validate GPS if provided
-        if ($validated['latitude'] && $validated['longitude']) {
-            $station = Station::find($validated['station_id']);
+        // if ($validated['latitude'] && $validated['longitude']) {
+        //     $station = Station::find($validated['station_id']);
 
-            if (! $station->validateGPSLocation($validated['latitude'], $validated['longitude'])) {
-                return back()->with('error', 'GPS location is outside the station boundary.');
-            }
-        }
+        //     if (! $station->validateGPSLocation($validated['latitude'], $validated['longitude'])) {
+        //         return back()->with('error', 'GPS location is outside the station boundary.');
+        //     }
+        // }
 
         DB::transaction(function () use ($validated, $request) {
             // Create verification record
@@ -329,14 +329,14 @@ class HeadcountController extends Controller
                 'verified_by' => auth()->id(),
                 'verified_at' => now(),
                 'verification_status' => $validated['verification_status'],
-                'location' => $validated['latitude'] && $validated['longitude']
-                    ? json_encode([
-                        'latitude' => $validated['latitude'],
-                        'longitude' => $validated['longitude'],
-                        'station_id' => $validated['station_id'],
-                    ])
-                    : null,
-                'remarks' => $validated['remarks'],
+                // 'location' => $validated['latitude'] && $validated['longitude']
+                //     ? json_encode([
+                //         'latitude' => $validated['latitude'],
+                //         'longitude' => $validated['longitude'],
+                //         'station_id' => $validated['station_id'],
+                //     ])
+                //     : null,
+                // 'remarks' => $validated['remarks'],
             ]);
 
             // Store photo

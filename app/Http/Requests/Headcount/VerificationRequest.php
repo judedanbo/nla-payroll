@@ -64,7 +64,7 @@ class VerificationRequest extends FormRequest
                 'between:-180,180',
             ],
             'photo' => [
-                'required',
+                // 'required',
                 'image',
                 'mimes:jpeg,jpg,png',
                 'max:5120', // 5MB

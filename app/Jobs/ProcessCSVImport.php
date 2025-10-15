@@ -14,6 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProcessCSVImport implements ShouldQueue
 {
@@ -41,7 +42,8 @@ class ProcessCSVImport implements ShouldQueue
         try {
             $this->importHistory->update(['status' => 'processing']);
 
-            $filePath = storage_path("app/{$this->importHistory->file_path}");
+            // Get the full path from Storage facade since 'local' disk uses storage_path('app/private')
+            $filePath = Storage::disk('local')->path($this->importHistory->file_path);
 
             // Get total rows for progress tracking
             $totalRows = $csvService->getTotalRows($filePath);

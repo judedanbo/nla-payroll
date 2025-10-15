@@ -9,6 +9,7 @@ use App\Models\ImportHistory;
 use App\Services\CSVImportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -60,7 +61,9 @@ class ImportController extends Controller
         $path = $file->store('imports/temp', 'local');
 
         // Parse CSV headers and first 10 rows for preview
-        $preview = $this->csvImportService->previewFile(storage_path("app/{$path}"));
+        // Get the full path from Storage facade since 'local' disk uses storage_path('app/private')
+        $fullPath = Storage::disk('local')->path($path);
+        $preview = $this->csvImportService->previewFile($fullPath);
 
         // Store preview data in session for next step
         session([
@@ -76,7 +79,7 @@ class ImportController extends Controller
     /**
      * Display preview of first 10 rows with column mapping interface.
      */
-    public function preview(): Response
+    public function preview()
     {
         $preview = session('import_preview');
         $importType = session('import_type');

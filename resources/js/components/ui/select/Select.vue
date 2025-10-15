@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { SelectRoot, type SelectRootEmits, type SelectRootProps } from 'reka-ui'
+import { SelectRoot, type SelectRootProps } from 'reka-ui'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 const props = defineProps<SelectRootProps>()
-const emits = defineEmits<SelectRootEmits>()
 </script>
 
 <template>
-  <SelectRoot v-bind="props" v-on="emits">
+  <SelectRoot v-bind="{ ...props, ...$attrs }">
     <slot />
   </SelectRoot>
 </template>
