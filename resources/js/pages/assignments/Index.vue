@@ -264,7 +264,7 @@ const getStatusBadge = (status: string) => {
                         <div>
                             <CardTitle>All Assignments</CardTitle>
                             <CardDescription>
-                                {{ assignments.meta.total }} total assignments
+                                {{ assignments.total }} total assignments
                             </CardDescription>
                         </div>
                     </div>
