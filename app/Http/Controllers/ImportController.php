@@ -56,6 +56,12 @@ class ImportController extends Controller
         $validated = $request->validated();
         $file = $request->file('file');
 
+        // Ensure import temp directory exists
+        $tempDir = storage_path('app/imports/temp');
+        if (! file_exists($tempDir)) {
+            mkdir($tempDir, 0755, true);
+        }
+
         // Store uploaded file temporarily
         $path = $file->store('imports/temp', 'local');
 
