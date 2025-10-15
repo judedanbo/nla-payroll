@@ -15,6 +15,7 @@ Route::get('dashboard', function () {
 // Import Routes
 Route::middleware(['auth', 'verified'])->prefix('import')->name('import.')->group(function () {
     Route::get('/', [ImportController::class, 'index'])->name('index');
+    Route::get('templates/{type}', [ImportController::class, 'downloadTemplate'])->name('downloadTemplate');
     Route::post('upload', [ImportController::class, 'upload'])->name('upload');
     Route::get('preview', [ImportController::class, 'preview'])->name('preview');
     Route::post('process', [ImportController::class, 'process'])->name('process');

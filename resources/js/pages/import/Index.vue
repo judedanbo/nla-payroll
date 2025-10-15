@@ -4,6 +4,7 @@ import { type BreadcrumbItem } from '@/types';
 import { Head } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { FileDown } from 'lucide-vue-next';
 
 interface ImportHistory {
     id: number;
@@ -183,6 +184,40 @@ const formatDate = (dateString: string) => {
                         </li>
                     </ol>
                 </nav>
+            </div>
+
+            <!-- Download Templates Section -->
+            <div class="rounded-xl border bg-card p-6">
+                <h2 class="text-lg font-semibold mb-3">Download CSV Templates</h2>
+                <p class="text-sm text-muted-foreground mb-4">
+                    Download the appropriate template file for your import type. Templates include all required columns with example data.
+                </p>
+                <div class="grid gap-3 sm:grid-cols-3">
+                    <a
+                        href="/import/templates/staff"
+                        download
+                        class="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                        <FileDown class="size-4" />
+                        Staff Records
+                    </a>
+                    <a
+                        href="/import/templates/bank_details"
+                        download
+                        class="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                        <FileDown class="size-4" />
+                        Bank Details
+                    </a>
+                    <a
+                        href="/import/templates/monthly_payments"
+                        download
+                        class="inline-flex items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+                    >
+                        <FileDown class="size-4" />
+                        Monthly Payments
+                    </a>
+                </div>
             </div>
 
             <!-- Step Content -->

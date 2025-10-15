@@ -288,4 +288,41 @@ class ImportController extends Controller
 
         return back()->with('success', "Import rolled back successfully. {$importHistory->successful_records} records removed.");
     }
+
+    /**
+     * Download CSV template for a specific import type.
+     */
+    public function downloadTemplate(Request $request): StreamedResponse
+    {
+        $type = $request->route('type');
+
+        // Validate import type
+        $validTypes = ['staff', 'bank_details', 'monthly_payments'];
+        if (! in_array($type, $validTypes)) {
+            abort(404, 'Invalid template type');
+        }
+
+        $filePath = storage_path("app/samples/{$type}_import_template.csv");
+
+        if (! file_exists($filePath)) {
+            abort(404, 'Template file not found');
+        }
+
+        $fileName = match ($type) {
+            'staff' => 'staff_import_template.csv',
+            'bank_details' => 'bank_details_import_template.csv',
+            'monthly_payments' => 'monthly_payments_import_template.csv',
+        };
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ];
+
+        return response()->stream(function () use ($filePath) {
+            $file = fopen($filePath, 'r');
+            fpassthru($file);
+            fclose($file);
+        }, 200, $headers);
+    }
 }
