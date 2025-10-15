@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import GPSCapture from '@/components/headcount/GPSCapture.vue';
-import PhotoCapture from '@/components/headcount/PhotoCapture.vue';
 import VerificationStatusBadge from '@/components/headcount/VerificationStatusBadge.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
@@ -21,8 +19,14 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { router } from '@inertiajs/vue3';
-import { ArrowLeft, Search, UserCheck, Users } from 'lucide-vue-next';
+import { Link, router } from '@inertiajs/vue3';
+import {
+    AlertCircle,
+    ArrowLeft,
+    Search,
+    UserCheck,
+    Users,
+} from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 interface Station {
@@ -105,7 +109,7 @@ const canSubmit = computed(() => {
     return (
         selectedStaffId.value &&
         selectedStationId.value &&
-        photoFile.value &&
+        // photoFile.value &&
         !isSubmitting.value
     );
 });
@@ -152,14 +156,14 @@ function handleSubmit() {
     formData.append('station_id', String(selectedStationId.value));
     formData.append('verification_status', verificationStatus.value);
 
-    if (photoFile.value) {
-        formData.append('photo', photoFile.value);
-    }
+    // if (photoFile.value) {
+    //     formData.append('photo', photoFile.value);
+    // }
 
-    if (gpsData.value) {
-        formData.append('latitude', String(gpsData.value.latitude));
-        formData.append('longitude', String(gpsData.value.longitude));
-    }
+    // if (gpsData.value) {
+    //     formData.append('latitude', String(gpsData.value.latitude));
+    //     formData.append('longitude', String(gpsData.value.longitude));
+    // }
 
     if (remarks.value) {
         formData.append('remarks', remarks.value);
@@ -222,22 +226,22 @@ function handleSubmit() {
                         <!-- Station Selection -->
                         <div class="space-y-2">
                             <Label for="station">Station</Label>
-                            <Select v-model="selectedStationId">
-                                <SelectTrigger id="station">
-                                    <SelectValue
-                                        placeholder="Select a station"
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem
-                                        v-for="station in stations"
-                                        :key="station.id"
-                                        :value="station.id"
-                                    >
-                                        {{ station.name }} ({{ station.code }})
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <select
+                                id="station"
+                                v-model="selectedStationId"
+                                class="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors outline-none focus:border-ring focus:ring-[3px] focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                                <option :value="undefined" disabled>
+                                    Select a station
+                                </option>
+                                <option
+                                    v-for="station in stations"
+                                    :key="station.id"
+                                    :value="station.id"
+                                >
+                                    {{ station.name }} ({{ station.code }})
+                                </option>
+                            </select>
                             <p
                                 v-if="selectedStation"
                                 class="text-xs text-muted-foreground"
@@ -384,6 +388,17 @@ function handleSubmit() {
                                         :status="verificationStatus"
                                     />
                                 </div>
+
+                                <!-- Report Discrepancy Link -->
+                                <div class="mt-3 pt-3 border-t">
+                                    <Link
+                                        :href="`/discrepancies/create?staff_id=${selectedStaff.id}`"
+                                        class="inline-flex items-center gap-2 text-sm text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 transition-colors"
+                                    >
+                                        <AlertCircle class="size-4" />
+                                        <span>Report a discrepancy for this staff member</span>
+                                    </Link>
+                                </div>
                             </div>
 
                             <div
@@ -399,13 +414,13 @@ function handleSubmit() {
                             </div>
 
                             <!-- Photo Capture -->
-                            <div v-if="selectedStaff" class="space-y-2">
+                            <!-- <div v-if="selectedStaff" class="space-y-2">
                                 <Label>Verification Photo *</Label>
                                 <PhotoCapture @captured="handlePhotoCapture" />
-                            </div>
+                            </div> -->
 
                             <!-- GPS Capture -->
-                            <div
+                            <!-- <div
                                 v-if="selectedStaff && selectedStation"
                                 class="space-y-2"
                             >
@@ -421,32 +436,23 @@ function handleSubmit() {
                                     "
                                     @captured="handleGPSCapture"
                                 />
-                            </div>
+                            </div> -->
 
                             <!-- Verification Status -->
                             <div v-if="selectedStaff" class="space-y-2">
                                 <Label for="status"
                                     >Verification Status *</Label
                                 >
-                                <Select v-model="verificationStatus">
-                                    <SelectTrigger id="status">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="present"
-                                            >Present</SelectItem
-                                        >
-                                        <SelectItem value="absent"
-                                            >Absent</SelectItem
-                                        >
-                                        <SelectItem value="on_leave"
-                                            >On Leave</SelectItem
-                                        >
-                                        <SelectItem value="ghost"
-                                            >Ghost Employee</SelectItem
-                                        >
-                                    </SelectContent>
-                                </Select>
+                                <select
+                                    id="status"
+                                    v-model="verificationStatus"
+                                    class="h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-xs transition-colors outline-none focus:border-ring focus:ring-[3px] focus:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                                >
+                                    <option value="present">Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="on_leave">On Leave</option>
+                                    <option value="ghost">Ghost Employee</option>
+                                </select>
                             </div>
 
                             <!-- Remarks -->

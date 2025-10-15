@@ -30,6 +30,7 @@ interface Props {
     stations: Station[];
     types: FilterOption[];
     severities: FilterOption[];
+    preselected_staff_id?: number | null;
 }
 
 const props = defineProps<Props>();
@@ -40,7 +41,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 ];
 
 const form = useForm({
-    staff_id: '',
+    staff_id: props.preselected_staff_id ? String(props.preselected_staff_id) : '',
     station_id: '',
     discrepancy_type: '',
     severity: '',
@@ -63,6 +64,14 @@ const submit = () => {
                 <p class="mt-2 text-sm text-muted-foreground">
                     Manually create a discrepancy record for investigation
                 </p>
+                <div
+                    v-if="preselected_staff_id"
+                    class="mt-3 rounded-md bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900 p-3"
+                >
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>Note:</strong> This discrepancy report was initiated from the staff verification process.
+                    </p>
+                </div>
             </div>
 
             <!-- Form -->

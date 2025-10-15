@@ -174,7 +174,7 @@ class DiscrepancyController extends Controller
     /**
      * Show create discrepancy form (for manual discrepancy creation).
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
         // Get active staff
         $staff = Staff::where('is_active', true)
@@ -207,11 +207,15 @@ class DiscrepancyController extends Controller
             'label' => $severity->label(),
         ]);
 
+        // Get preselected staff if provided via query parameter
+        $preselectedStaffId = $request->query('staff_id');
+
         return Inertia::render('discrepancies/Create', [
             'staff' => $staff,
             'stations' => $stations,
             'types' => $types,
             'severities' => $severities,
+            'preselected_staff_id' => $preselectedStaffId ? (int) $preselectedStaffId : null,
         ]);
     }
 
